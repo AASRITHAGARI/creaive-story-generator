@@ -1,35 +1,73 @@
-# Creative Story Generate
+# React + TypeScript + Vite
 
-Full-stack web app for playful story generation, translation, history, and animated visuals.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Stack
-- Frontend: React + Vite + TypeScript, React Query, Zustand, Framer Motion
-- Backend: Express 5, MongoDB (with in-memory fallback), Mongoose
-- Animations: lightweight SVG/Framer Motion
+Currently, two official plugins are available:
 
-## Quick start
-1. Backend
-   ```bash
-   cd server
-   cp .env.example .env
-   # set MONGODB_URI if you want persistence; otherwise memory store is used
-   npm run dev
-   ```
-2. Frontend
-   ```bash
-   cd frontend
-   cp .env.example .env    # optional: override API base
-   npm run dev             # opens on http://localhost:5173
-   ```
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## API (summary)
-- `POST /stories` → generate + save story `{ prompt }`
-- `GET /stories` → list history for the session (cookie-based)
-- `DELETE /stories/:id` → delete one
-- `POST /stories/clear` → clear all
-- `POST /translate` → translate `{ text, targetLang, storyId? }` (cached when storyId supplied)
+## React Compiler
 
-## Notes
-- If `MONGODB_URI` is absent or fails, the API transparently uses an in-memory store.
-- The frontend keeps translations per-story in memory; backend caches when storyId is passed.
-- Theme preference persists via `localStorage` and the `<html data-theme>` attribute.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
